@@ -1,4 +1,4 @@
-package org.example.ui
+package com.neoutils.json.ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable

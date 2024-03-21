@@ -44,7 +44,7 @@ kotlin {
 }
 
 android {
-    namespace = "org.example"
+    namespace = "com.neoutils.json"
     compileSdk = 34
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -52,7 +52,7 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "org.example"
+        applicationId = "com.neoutils.json"
 
         minSdk = 24
         targetSdk = 34
@@ -93,13 +93,13 @@ android {
 
 compose.desktop {
     application {
-        mainClass = "org.example.ui.MainKt"
+        mainClass = "com.neoutils.json.ui.MainKt"
 
         nativeDistributions {
 
             targetFormats(TargetFormat.Exe, TargetFormat.Rpm)
 
-            packageName = "org.example"
+            packageName = "com.neoutils.json"
             packageVersion = "1.0.0"
         }
     }

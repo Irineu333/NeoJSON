@@ -1,4 +1,4 @@
-package org.example.core
+package com.neoutils.json.core
 
 enum class Platform() {
     DESKTOP,
