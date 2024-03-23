@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 @Composable
 fun App() = MaterialTheme {
 
-
     val code = remember { mutableStateOf("") }
 
     CodeEditor(
