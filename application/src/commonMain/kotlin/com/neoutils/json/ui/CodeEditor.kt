@@ -43,8 +43,8 @@ fun CodeEditor(
                 lineHeight = mergedTextStyle.lineHeight,
                 fontSize = mergedTextStyle.fontSize,
                 lineHeightStyle = LineHeightStyle(
-                    alignment = LineHeightStyle.Alignment.Center,
-                    trim = LineHeightStyle.Trim.Both
+                    alignment = LineHeightStyle.Alignment.Proportional,
+                    trim = LineHeightStyle.Trim.None
                 )
             ),
             modifier = Modifier.background(
@@ -65,7 +65,7 @@ fun CodeEditor(
             textStyle = mergedTextStyle.copy(
                 lineHeightStyle = LineHeightStyle(
                     alignment = LineHeightStyle.Alignment.Proportional,
-                    trim = LineHeightStyle.Trim.Both
+                    trim = LineHeightStyle.Trim.None
                 )
             ),
             onTextLayout = {
