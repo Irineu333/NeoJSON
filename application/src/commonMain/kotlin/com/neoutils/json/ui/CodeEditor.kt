@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.rememberTextFieldVerticalScrollState
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
@@ -20,7 +19,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlin.math.roundToInt
 
 @Composable
 fun CodeEditor(
@@ -32,9 +30,7 @@ fun CodeEditor(
 
     val mergedTextStyle = typography.body2.merge(textStyle)
 
-    val scrollState = rememberTextFieldVerticalScrollState()
-
-    val scrollbarAdapter = rememberScrollbarAdapter(scrollState)
+    val scrollState = rememberScrollState()
 
     val lineCount = remember { mutableIntStateOf(0) }
 
@@ -42,7 +38,7 @@ fun CodeEditor(
 
         LineNumbers(
             count = lineCount.value,
-            offset = scrollState.offset.roundToInt(),
+            offset = scrollState.value,
             textStyle = TextStyle(
                 lineHeight = mergedTextStyle.lineHeight,
                 fontSize = mergedTextStyle.fontSize,
@@ -56,14 +52,16 @@ fun CodeEditor(
             ).fillMaxHeight()
         )
 
+        // TODO: improve later, BasicTextField is not performant for large text
         BasicTextField(
             modifier = Modifier
                 .padding(start = 4.dp)
                 .weight(1f, false)
-                .fillMaxSize(),
+                .fillMaxSize()
+                // TODO: improve later, https://github.com/JetBrains/compose-multiplatform/issues/4533
+                .verticalScroll(scrollState),
             value = code,
             onValueChange = onCodeChange,
-            scrollState = scrollState,
             textStyle = mergedTextStyle.copy(
                 lineHeightStyle = LineHeightStyle(
                     alignment = LineHeightStyle.Alignment.Proportional,
@@ -74,8 +72,6 @@ fun CodeEditor(
                 lineCount.value = it.lineCount
             },
         )
-
-        VerticalScrollbar(scrollbarAdapter)
     }
 }
 
@@ -88,6 +84,7 @@ fun LineNumbers(
 ) {
 
     val lines = remember(count) {
+        // TODO: improve later
         IntRange(1, count).joinToString("\n")
     }
 
