@@ -35,7 +35,7 @@ actual fun CodeEditor(
 
     val offset = remember(scrollState.offset) {  scrollState.offset.roundToInt() }
 
-    val lineCount = remember { mutableIntStateOf(0) }
+    val lineCount = remember { mutableIntStateOf(1) }
 
     Row(modifier) {
 
