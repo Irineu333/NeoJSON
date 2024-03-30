@@ -18,106 +18,109 @@ class JsonHighlight(
 
         val tokens = Token.parse(text)
 
-        return AnnotatedString(
-            text = text,
-            spanStyles = buildList {
-                tokens.forEach { token ->
-                    val context = contexts.lastOrNull()
+        val spanStyles = mutableListOf<AnnotatedString.Range<SpanStyle>>()
 
-                    when (token.type) {
+        tokens.forEach { token ->
 
-                        Token.Type.START_OBJECT -> {
-                            contexts.add(Context.OBJECT_KEY)
-                        }
+            val context = contexts.lastOrNull()
 
-                        Token.Type.START_ARRAY -> {
-                            contexts.add(Context.ARRAY)
-                        }
+            when (token.type) {
 
-                        Token.Type.END_OBJECT -> {
-                            contexts.removeLastOrNull()
-                        }
+                Token.Type.START_OBJECT -> {
+                    contexts.add(Context.OBJECT_KEY)
+                }
 
-                        Token.Type.END_ARRAY -> {
-                            contexts.removeLastOrNull()
-                        }
+                Token.Type.START_ARRAY -> {
+                    contexts.add(Context.ARRAY)
+                }
 
-                        Token.Type.COLON -> {
-                            contexts.add(Context.OBJECT_VALUE)
-                        }
+                Token.Type.END_OBJECT -> {
+                    contexts.removeLastOrNull()
+                }
 
-                        Token.Type.COMMA -> {
-                            if (context == Context.OBJECT_VALUE) {
-                                contexts.removeLastOrNull()
-                            }
-                        }
+                Token.Type.END_ARRAY -> {
+                    contexts.removeLastOrNull()
+                }
 
-                        Token.Type.STRING -> {
+                Token.Type.COLON -> {
+                    contexts.add(Context.OBJECT_VALUE)
+                }
 
-                            if (context == Context.OBJECT_KEY) {
-                                add(
-                                    AnnotatedString.Range(
-                                        SpanStyle(keyColor),
-                                        token.range.first,
-                                        token.range.last.inc()
-                                    )
-                                )
-
-                                return@forEach
-                            }
-
-                            if (context?.isValue == true) {
-                                add(
-                                    AnnotatedString.Range(
-                                        SpanStyle(stringColor),
-                                        token.range.first,
-                                        token.range.last.inc()
-                                    )
-                                )
-
-                                return@forEach
-                            }
-                        }
-
-                        Token.Type.NUMBER -> {
-                            if (context?.isValue == true) {
-                                add(
-                                    AnnotatedString.Range(
-                                        SpanStyle(numberColor),
-                                        token.range.first,
-                                        token.range.last.inc()
-                                    )
-                                )
-                            }
-                        }
-
-                        Token.Type.BOOLEAN -> {
-                            if (context?.isValue == true) {
-                                add(
-                                    AnnotatedString.Range(
-                                        SpanStyle(booleanColor),
-                                        token.range.first,
-                                        token.range.last.inc()
-                                    )
-                                )
-                            }
-                        }
-
-                        Token.Type.NULL -> {
-                            if (context?.isValue == true) {
-                                add(
-                                    AnnotatedString.Range(
-                                        SpanStyle(nullColor),
-                                        token.range.first,
-                                        token.range.last.inc()
-                                    )
-                                )
-                            }
-                        }
-
+                Token.Type.COMMA -> {
+                    if (context == Context.OBJECT_VALUE) {
+                        contexts.removeLastOrNull()
                     }
                 }
+
+                Token.Type.STRING -> {
+
+                    if (context == Context.OBJECT_KEY) {
+                        spanStyles.add(
+                            AnnotatedString.Range(
+                                SpanStyle(keyColor),
+                                token.range.first,
+                                token.range.last.inc()
+                            )
+                        )
+
+                        return@forEach
+                    }
+
+                    if (context?.isValue == true) {
+                        spanStyles.add(
+                            AnnotatedString.Range(
+                                SpanStyle(stringColor),
+                                token.range.first,
+                                token.range.last.inc()
+                            )
+                        )
+
+                        return@forEach
+                    }
+                }
+
+                Token.Type.NUMBER -> {
+                    if (context?.isValue == true) {
+                        spanStyles.add(
+                            AnnotatedString.Range(
+                                SpanStyle(numberColor),
+                                token.range.first,
+                                token.range.last.inc()
+                            )
+                        )
+                    }
+                }
+
+                Token.Type.BOOLEAN -> {
+                    if (context?.isValue == true) {
+                        spanStyles.add(
+                            AnnotatedString.Range(
+                                SpanStyle(booleanColor),
+                                token.range.first,
+                                token.range.last.inc()
+                            )
+                        )
+                    }
+                }
+
+                Token.Type.NULL -> {
+                    if (context?.isValue == true) {
+                        spanStyles.add(
+                            AnnotatedString.Range(
+                                SpanStyle(nullColor),
+                                token.range.first,
+                                token.range.last.inc()
+                            )
+                        )
+                    }
+                }
+
             }
+        }
+
+        return AnnotatedString(
+            text = text,
+            spanStyles = spanStyles
         )
     }
 
