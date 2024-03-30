@@ -11,16 +11,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
+import com.neoutils.json.util.rememberHighlight
 import com.neoutils.json.util.withHighlight
 
 @Composable
@@ -37,6 +38,12 @@ actual fun CodeEditor(
     val scrollState = rememberScrollState()
 
     val lineCount = remember { mutableIntStateOf(1) }
+
+    val textFieldValue = remember {
+        mutableStateOf(
+            TextFieldValue()
+        )
+    }
 
     Row(modifier) {
 
@@ -58,9 +65,12 @@ actual fun CodeEditor(
 
         // TODO(improve): it's not performant for large text
         BasicTextField(
-            value = code,
+            value = textFieldValue.value.copy(
+                rememberHighlight(code, highlight)
+            ),
             onValueChange = {
-                onCodeChange(it)
+                textFieldValue.value = it
+                onCodeChange(it.text)
             },
             textStyle = mergedTextStyle.copy(
                 lineHeightStyle = LineHeightStyle(
@@ -70,12 +80,6 @@ actual fun CodeEditor(
             ),
             onTextLayout = {
                 lineCount.intValue = it.lineCount
-            },
-            visualTransformation = {
-                TransformedText(
-                    it.text.withHighlight(highlight),
-                    OffsetMapping.Identity
-                )
             },
             modifier = Modifier
                 .padding(start = 4.dp)

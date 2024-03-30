@@ -18,7 +18,7 @@ expect fun CodeEditor(
     code: String,
     onCodeChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    highlight : List<AnnotatedString.Range<SpanStyle>> = emptyList(),
+    highlight: List<AnnotatedString.Range<SpanStyle>> = emptyList(),
     textStyle: TextStyle = TextStyle.Default,
 )
 
