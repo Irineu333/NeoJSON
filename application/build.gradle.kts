@@ -36,11 +36,16 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
+            implementation(libs.kotlinx.coroutines.core)
+
             implementation(libs.voyager.screenModel)
             implementation(libs.voyager.navigator)
         }
 
         desktopMain.dependencies {
+
+            implementation(libs.kotlinx.coroutines.swing)
+
             implementation(compose.desktop.currentOs)
         }
     }

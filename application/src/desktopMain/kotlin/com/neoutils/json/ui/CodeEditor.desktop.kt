@@ -78,7 +78,10 @@ actual fun CodeEditor(
             scrollState = scrollState,
             onValueChange = {
                 textFieldValue.value = it
-                onCodeChange(it.text)
+
+                if(code != it.text) {
+                    onCodeChange(it.text)
+                }
             },
             textStyle = mergedTextStyle.copy(
                 lineHeightStyle = LineHeightStyle(
