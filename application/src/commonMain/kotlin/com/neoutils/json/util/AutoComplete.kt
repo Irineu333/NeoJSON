@@ -3,6 +3,7 @@ package com.neoutils.json.util
 import androidx.compose.ui.text.input.TextFieldValue
 import com.neoutils.json.model.TextChange
 import com.neoutils.json.ui.singleIndex
+import kotlin.math.abs
 
 object AutoComplete {
 
@@ -15,7 +16,11 @@ object AutoComplete {
         textChange: TextChange
     ): TextFieldValue {
 
-        if (textChange.diff != 1) {
+        if (abs(textChange.diff) != 1) {
+            return textChange.newText
+        }
+
+        if (!textChange.collapsed) {
             return textChange.newText
         }
 
@@ -41,15 +46,18 @@ object AutoComplete {
 
         Token.entries.find {
             it.start == insertedChar
-        }?.also { token ->
+        }?.let { token ->
             return textChange.newText.let {
 
                 val text = it.text
 
                 it.copy(
-                    text = text.insertBetween(
-                        index = insertedIndex + 1,
-                        text = "${token.end}",
+                    text = text.substring(
+                        startIndex = 0,
+                        endIndex = insertedIndex + 1
+                    ) + token.end + text.substring(
+                        startIndex = insertedIndex + 1,
+                        endIndex = text.length
                     )
                 )
             }
@@ -64,7 +72,39 @@ object AutoComplete {
         textChange: TextChange
     ): TextFieldValue {
 
-        // TODO: implement auto delete
+        // auto delete
+
+        val oldText = textChange.oldText
+        val newText = textChange.newText
+
+        val deletedIndex = oldText.selection.singleIndex() - 1
+        val deletedChar = oldText.text[deletedIndex]
+
+        Token.entries.find {
+            it.start == deletedChar
+        }?.let { token ->
+
+            val nextIndex = newText.selection.singleIndex()
+            val nextChar = newText.text.getOrNull(nextIndex)
+
+            if (nextChar != token.end) return@let
+
+            return newText.let {
+
+                val text = it.text
+
+                it.copy(
+                    text = text.substring(
+                        startIndex = 0,
+                        endIndex = nextIndex
+                    ) + text.substring(
+                        startIndex = nextIndex + 1,
+                        endIndex = text.length
+                    )
+                )
+            }
+        }
+
 
         return textChange.newText
     }
