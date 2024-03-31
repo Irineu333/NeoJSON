@@ -15,12 +15,12 @@ class AppScreen : Screen {
 
         val viewModel = rememberScreenModel { AppViewModel() }
 
-        val text by viewModel.text.collectAsState()
+        val textField by viewModel.textField.collectAsState()
 
         CodeEditor(
-            code = text,
-            onCodeChange = {
-                viewModel.onCodeChange(it)
+            value = textField,
+            onValueChange = {
+                viewModel.onValueChange(it)
             },
             modifier = Modifier.fillMaxSize()
         )

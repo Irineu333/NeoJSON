@@ -7,8 +7,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -16,8 +14,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 expect fun CodeEditor(
-    code: TextFieldValue,
-    onCodeChange: (TextFieldValue) -> Unit,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
     textStyle: TextStyle = TextStyle.Default,
 )

@@ -11,23 +11,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
-import com.neoutils.json.util.rememberHighlight
-import com.neoutils.json.util.withHighlight
 
 @Composable
 actual fun CodeEditor(
-    code: TextFieldValue,
-    onCodeChange: (TextFieldValue) -> Unit,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
     modifier: Modifier,
     textStyle: TextStyle,
 ) {
@@ -58,8 +53,8 @@ actual fun CodeEditor(
 
         // TODO(improve): it's not performant for large text
         BasicTextField(
-            value = code,
-            onValueChange = onCodeChange,
+            value = value,
+            onValueChange = onValueChange,
             textStyle = mergedTextStyle.copy(
                 lineHeightStyle = LineHeightStyle(
                     alignment = LineHeightStyle.Alignment.Proportional,

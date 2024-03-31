@@ -18,12 +18,22 @@ class AppViewModel : ScreenModel {
         nullColor = Color(0xffe41500)
     )
 
-    private val _text = MutableStateFlow(TextFieldValue())
-    val text = _text.asStateFlow()
+    private val _textField = MutableStateFlow(TextFieldValue())
+    val textField = _textField.asStateFlow()
 
-    fun onCodeChange(code: TextFieldValue) {
-        _text.value = AutoComplete(code, text.value).let {
-            it.copy(jsonHighlight(it.text))
+    fun onValueChange(newTextField: TextFieldValue) {
+
+        if (newTextField.text != textField.value.text) {
+
+            _textField.value = AutoComplete(
+                newTextField, textField.value
+            ).let {
+                it.copy(jsonHighlight(it.text))
+            }
+
+            return
         }
+
+        _textField.value = newTextField
     }
 }

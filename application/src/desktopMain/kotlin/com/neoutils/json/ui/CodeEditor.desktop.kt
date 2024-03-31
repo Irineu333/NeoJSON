@@ -25,8 +25,8 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 actual fun CodeEditor(
-    code: TextFieldValue,
-    onCodeChange: (TextFieldValue) -> Unit,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
     modifier: Modifier,
     textStyle: TextStyle,
 ) {
@@ -61,9 +61,9 @@ actual fun CodeEditor(
 
         // TODO(improve): it's not performant for large text
         BasicTextField(
-            value = code,
+            value = value,
             scrollState = scrollState,
-            onValueChange = onCodeChange,
+            onValueChange = onValueChange,
             textStyle = mergedTextStyle.copy(
                 lineHeightStyle = LineHeightStyle(
                     alignment = LineHeightStyle.Alignment.Proportional,
