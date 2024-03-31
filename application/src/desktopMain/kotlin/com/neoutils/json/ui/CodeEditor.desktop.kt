@@ -13,26 +13,21 @@ import androidx.compose.foundation.text.rememberTextFieldVerticalScrollState
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
-import com.neoutils.json.util.rememberHighlight
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 actual fun CodeEditor(
-    code: String,
-    onCodeChange: (String) -> Unit,
+    code: TextFieldValue,
+    onCodeChange: (TextFieldValue) -> Unit,
     modifier: Modifier,
-    highlight: List<AnnotatedString.Range<SpanStyle>>,
     textStyle: TextStyle,
 ) {
 
@@ -45,12 +40,6 @@ actual fun CodeEditor(
     val offset = remember(scrollState.offset) { scrollState.offset.roundToInt() }
 
     val lineCount = remember { mutableIntStateOf(1) }
-
-    val textFieldValue = remember {
-        mutableStateOf(
-            TextFieldValue()
-        )
-    }
 
     Row(modifier) {
 
@@ -72,17 +61,9 @@ actual fun CodeEditor(
 
         // TODO(improve): it's not performant for large text
         BasicTextField(
-            value = textFieldValue.value.copy(
-                rememberHighlight(code, highlight)
-            ),
+            value = code,
             scrollState = scrollState,
-            onValueChange = {
-                textFieldValue.value = it
-
-                if(code != it.text) {
-                    onCodeChange(it.text)
-                }
-            },
+            onValueChange = onCodeChange,
             textStyle = mergedTextStyle.copy(
                 lineHeightStyle = LineHeightStyle(
                     alignment = LineHeightStyle.Alignment.Proportional,

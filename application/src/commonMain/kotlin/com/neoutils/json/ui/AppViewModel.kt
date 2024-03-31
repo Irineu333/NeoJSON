@@ -1,8 +1,9 @@
 package com.neoutils.json.ui
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.TextFieldValue
 import cafe.adriel.voyager.core.model.ScreenModel
+import com.neoutils.json.util.AutoComplete
 import com.neoutils.json.util.JsonHighlight
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,10 +18,12 @@ class AppViewModel : ScreenModel {
         nullColor = Color(0xffe41500)
     )
 
-    private val _json = MutableStateFlow(AnnotatedString(""))
-    val json = _json.asStateFlow()
+    private val _text = MutableStateFlow(TextFieldValue())
+    val text = _text.asStateFlow()
 
-    fun onCodeChange(code: String) {
-        _json.value = jsonHighlight(code)
+    fun onCodeChange(code: TextFieldValue) {
+        _text.value = AutoComplete(code, text.value).let {
+            it.copy(jsonHighlight(it.text))
+        }
     }
 }

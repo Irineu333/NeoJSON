@@ -15,11 +15,10 @@ class AppScreen : Screen {
 
         val viewModel = rememberScreenModel { AppViewModel() }
 
-        val json by viewModel.json.collectAsState()
+        val text by viewModel.text.collectAsState()
 
         CodeEditor(
-            code = json.text,
-            highlight = json.spanStyles,
+            code = text,
             onCodeChange = {
                 viewModel.onCodeChange(it)
             },

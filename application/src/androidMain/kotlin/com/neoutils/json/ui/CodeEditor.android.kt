@@ -26,10 +26,9 @@ import com.neoutils.json.util.withHighlight
 
 @Composable
 actual fun CodeEditor(
-    code: String,
-    onCodeChange: (String) -> Unit,
+    code: TextFieldValue,
+    onCodeChange: (TextFieldValue) -> Unit,
     modifier: Modifier,
-    highlight: List<AnnotatedString.Range<SpanStyle>>,
     textStyle: TextStyle,
 ) {
 
@@ -38,12 +37,6 @@ actual fun CodeEditor(
     val scrollState = rememberScrollState()
 
     val lineCount = remember { mutableIntStateOf(1) }
-
-    val textFieldValue = remember {
-        mutableStateOf(
-            TextFieldValue()
-        )
-    }
 
     Row(modifier) {
 
@@ -65,16 +58,8 @@ actual fun CodeEditor(
 
         // TODO(improve): it's not performant for large text
         BasicTextField(
-            value = textFieldValue.value.copy(
-                rememberHighlight(code, highlight)
-            ),
-            onValueChange = {
-                textFieldValue.value = it
-
-                if(code != it.text) {
-                    onCodeChange(it.text)
-                }
-            },
+            value = code,
+            onValueChange = onCodeChange,
             textStyle = mergedTextStyle.copy(
                 lineHeightStyle = LineHeightStyle(
                     alignment = LineHeightStyle.Alignment.Proportional,

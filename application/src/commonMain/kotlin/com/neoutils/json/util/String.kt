@@ -13,3 +13,11 @@ fun String.withHighlight(
         }
     )
 }
+
+fun String.insertBetween(text: String, start: Int, end: Int): String {
+    return substring(0, start) + text + substring(end, length)
+}
+
+fun String.insertBetween(text: String, index: Int): String {
+    return insertBetween(text, index, index)
+}
