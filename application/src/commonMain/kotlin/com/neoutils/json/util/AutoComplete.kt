@@ -1,11 +1,14 @@
 package com.neoutils.json.util
 
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import com.neoutils.json.model.TextChange
 import com.neoutils.json.ui.singleIndex
 import kotlin.math.abs
 
 object AutoComplete {
+
+    private const val INDENT = 4
 
     operator fun invoke(
         newText: TextFieldValue,
@@ -41,13 +44,15 @@ object AutoComplete {
 
         // auto close
 
-        val insertedIndex = textChange.newText.selection.singleIndex() - 1
-        val insertedChar = textChange.newText.text[insertedIndex]
+        val newText = textChange.newText
+
+        val insertedIndex = newText.selection.singleIndex() - 1
+        val insertedChar = newText.text[insertedIndex]
 
         Token.entries.find {
             it.start == insertedChar
         }?.let { token ->
-            return textChange.newText.let {
+            return newText.let {
 
                 val text = it.text
 
@@ -63,9 +68,36 @@ object AutoComplete {
             }
         }
 
-        // TODO: implement auto indent
+        if (insertedChar == '\n') {
 
-        return textChange.newText
+            val nextIndex = insertedIndex + 1
+
+            val previousText = newText.text.substring(
+                startIndex = 0,
+                endIndex = insertedIndex
+            )
+
+            val previousLine = previousText.substringAfterLast(delimiter = '\n')
+
+            val previousIndent = previousLine.countFirst { it == ' ' }
+
+            val indent = ' ' * previousIndent
+
+            return newText.copy(
+                text = newText.text.substring(
+                    startIndex = 0,
+                    endIndex = insertedIndex + 1
+                ) + indent + newText.text.substring(
+                    startIndex = nextIndex,
+                    endIndex = newText.text.length
+                ),
+                selection = TextRange(
+                    index = insertedIndex + previousIndent + 1
+                )
+            )
+        }
+
+        return newText
     }
 
     private fun onDelete(
@@ -117,4 +149,23 @@ object AutoComplete {
         OBJECT('{', '}'),
         STRING('"', '"')
     }
+}
+
+private fun String.countFirst(function: (Char) -> Boolean): Int {
+
+    var count = 0
+
+    for (c in this) {
+        if (function(c)) {
+            count++
+        } else {
+            break
+        }
+    }
+
+    return count
+}
+
+private operator fun Char.times(indent: Int): String {
+    return IntRange(1, indent).joinToString(separator = "") { toString() }
 }
