@@ -6,9 +6,11 @@ import com.neoutils.json.model.TextChange
 import com.neoutils.json.ui.singleIndex
 import kotlin.math.abs
 
-object AutoComplete {
+class AutoComplete(
+    indent: Int
+) {
 
-    private const val INDENT = 4
+    private val defaultIndent = ' ' * indent
 
     operator fun invoke(
         newText: TextFieldValue,
@@ -68,26 +70,58 @@ object AutoComplete {
             }
         }
 
+        // auto indent
+
         if (insertedChar == '\n') {
 
+            val previousIndex = insertedIndex - 1
+            val previousChar = newText.text.getOrNull(previousIndex)
+
             val nextIndex = insertedIndex + 1
+            val nextChar = newText.text.getOrNull(nextIndex)
 
             val previousText = newText.text.substring(
                 startIndex = 0,
                 endIndex = insertedIndex
             )
 
-            val previousLine = previousText.substringAfterLast(delimiter = '\n')
+            val previousIndent = previousText.lastIndent()
 
-            val previousIndent = previousLine.countFirst { it == ' ' }
+            val copiedIndent = ' ' * previousIndent
 
-            val indent = ' ' * previousIndent
+            listOf(Token.OBJECT, Token.ARRAY).find {
+                it.start == previousChar && it.end == nextChar
+            }?.let {
+                return newText.let {
+
+                    val text = it.text
+
+                    val newIndent = copiedIndent +
+                            defaultIndent + '\n' +
+                            copiedIndent
+
+                    it.copy(
+                        text = text.substring(
+                            startIndex = 0,
+                            endIndex = insertedIndex + 1
+                        ) + newIndent + text.substring(
+                            startIndex = nextIndex,
+                            endIndex = text.length
+                        ),
+                        selection = TextRange(
+                            index = nextIndex +
+                                    copiedIndent.length +
+                                    defaultIndent.length
+                        )
+                    )
+                }
+            }
 
             return newText.copy(
                 text = newText.text.substring(
                     startIndex = 0,
                     endIndex = insertedIndex + 1
-                ) + indent + newText.text.substring(
+                ) + copiedIndent + newText.text.substring(
                     startIndex = nextIndex,
                     endIndex = newText.text.length
                 ),
@@ -149,23 +183,4 @@ object AutoComplete {
         OBJECT('{', '}'),
         STRING('"', '"')
     }
-}
-
-private fun String.countFirst(function: (Char) -> Boolean): Int {
-
-    var count = 0
-
-    for (c in this) {
-        if (function(c)) {
-            count++
-        } else {
-            break
-        }
-    }
-
-    return count
-}
-
-private operator fun Char.times(indent: Int): String {
-    return IntRange(1, indent).joinToString(separator = "") { toString() }
 }

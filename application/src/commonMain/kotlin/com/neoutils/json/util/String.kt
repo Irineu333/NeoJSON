@@ -13,3 +13,27 @@ fun String.withHighlight(
         }
     )
 }
+
+fun String.lastIndent(): Int {
+
+    if (isEmpty()) return 0
+
+    var index = lastIndex
+
+    var char = get(index)
+
+    var count = 0
+
+    while (char != '\n' && index != -1) {
+
+        if (char == ' ') {
+            count++
+        } else {
+            count = 0
+        }
+
+        char = get(index--)
+    }
+
+    return count
+}

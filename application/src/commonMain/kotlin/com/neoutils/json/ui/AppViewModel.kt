@@ -18,6 +18,8 @@ class AppViewModel : ScreenModel {
         nullColor = Color(0xffe41500)
     )
 
+    private val autoComplete = AutoComplete(indent = 4)
+
     private val _textField = MutableStateFlow(TextFieldValue())
     val textField = _textField.asStateFlow()
 
@@ -25,9 +27,10 @@ class AppViewModel : ScreenModel {
 
         if (newTextField.text != textField.value.text) {
 
-            _textField.value = AutoComplete(
+            _textField.value = autoComplete(
                 newTextField, textField.value
             ).let {
+                // TODO(improve): make asynchronous
                 it.copy(jsonHighlight(it.text))
             }
 
