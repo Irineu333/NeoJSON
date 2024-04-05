@@ -1,6 +1,8 @@
 package com.neoutils.json.ui
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import cafe.adriel.voyager.core.model.ScreenModel
 import com.neoutils.json.util.AutoComplete
@@ -18,6 +20,8 @@ class AppViewModel : ScreenModel {
         nullColor = Color(0xffe41500)
     )
 
+    private var highlight = listOf<AnnotatedString.Range<SpanStyle>>()
+
     private val autoComplete = AutoComplete(indent = 4)
 
     private val _textField = MutableStateFlow(TextFieldValue())
@@ -31,12 +35,18 @@ class AppViewModel : ScreenModel {
                 newTextField, textField.value
             ).let {
                 // TODO(improve): make asynchronous
-                it.copy(jsonHighlight(it.text))
+                highlight = jsonHighlight(it.text).spanStyles
+                it.copy(AnnotatedString(it.text, highlight))
             }
 
             return
         }
 
-        _textField.value = newTextField
+        _textField.value = newTextField.copy(
+            AnnotatedString(
+                newTextField.text,
+                highlight
+            )
+        )
     }
 }

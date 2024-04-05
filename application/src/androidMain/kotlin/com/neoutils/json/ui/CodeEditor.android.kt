@@ -53,7 +53,9 @@ actual fun CodeEditor(
 
         // TODO(improve): it's not performant for large text
         BasicTextField(
-            value = value,
+            value = value.copy(
+                composition = null
+            ),
             onValueChange = onValueChange,
             textStyle = mergedTextStyle.copy(
                 lineHeightStyle = LineHeightStyle(
