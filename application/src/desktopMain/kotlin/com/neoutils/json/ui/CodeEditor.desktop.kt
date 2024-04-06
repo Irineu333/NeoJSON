@@ -16,6 +16,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.LineHeightStyle
@@ -59,10 +61,35 @@ actual fun CodeEditor(
             ).fillMaxHeight()
         )
 
+        val lineHeight = with(LocalDensity.current) { mergedTextStyle.lineHeight.toPx() }
+
+        val visibleLinesCount = scrollState.viewportSize / lineHeight
+
+        val firstVisibleLine = (offset / lineHeight).roundDown()
+
+        val lastVisibleLine = (firstVisibleLine + visibleLinesCount).roundUp()
+
+        val splitWithRange = remember(value.text) {
+            value.text.splitWithRange("\n")
+        }
+
+        val textIndexRange = splitWithRange.subList(
+            firstVisibleLine,
+            minOf(lastVisibleLine, splitWithRange.size)
+        )
+
         // TODO(improve): it's not performant for large text
         BasicTextField(
             value = value.copy(
-                composition = null
+                composition = null,
+                annotatedString = AnnotatedString(
+                    text = value.text,
+                    spanStyles = value.annotatedString.spanStyles.filter { spanStyle ->
+                        textIndexRange.any {
+                            spanStyle.start in it && spanStyle.end in it
+                        }
+                    }
+                )
             ),
             scrollState = scrollState,
             onValueChange = onValueChange,
@@ -83,4 +110,29 @@ actual fun CodeEditor(
 
         VerticalScrollbar(scrollbarAdapter)
     }
+}
+
+private fun Float.roundUp(): Int {
+    return toInt() + 1
+}
+
+private fun Float.roundDown(): Int {
+    return toInt()
+}
+
+private fun String.splitWithRange(delimiter: String): List<IntRange> {
+
+    val result = mutableListOf<IntRange>()
+
+    var start = 0
+    var end: Int
+
+    while (this.indexOf(delimiter, start).also { end = it } != -1) {
+        result.add(start..<end + 1)
+        start = end + delimiter.length
+    }
+
+    result.add(start..<length + 1)
+
+    return result
 }
